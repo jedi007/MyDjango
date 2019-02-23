@@ -1,3 +1,5 @@
+var dialog = null; 
+
 $(function(){
 	var lines = '';
 	for(var i = 0; i< 15;i++)
@@ -11,6 +13,12 @@ $(function(){
 		lines += '<line x1="'+linx+'"  y1="40"   x2="'+linx+'" y2="600" style="stroke:rgb(0,0,0);stroke-width:1" />';
 	}
 	$("g").html(lines);
+	dialog = window.creatMyDialog();
+	dialog.setOK_cb(function(){
+		location.reload();
+	});
+	dialog.setCancel_hide(true);
+	dialog.setClosebtn_hide(true);
 });
 
 var checkerboard = new Array();
@@ -41,7 +49,6 @@ function timedCount()
 }
 timedCount();
 
-
 $(function(){
 	$("svg").click(function(e){
 		console.log("in click------------------------");
@@ -57,6 +64,14 @@ $(function(){
 				if(0 < col && col < 16 && 0 < row && row < 16 && checkerboard[row-1][col-1][0] != 1)
 				{
 					addchess(col,row);
+					
+					if(steps%2 == 0)
+					{
+						console.log("------------computerplayer step:");
+						var beststep = complayer.computerstep(steps,checkerboard);
+						console.log(beststep);
+						addchess(beststep.j + 1,beststep.i + 1);
+					}
 				}
 				else
 				{
@@ -72,7 +87,7 @@ function addchess(col,row){
 	if(steps%2 == 1)
 	{
 		color = 'white';
-		checkerboard[row-1][col-1][0] = 2;
+		checkerboard[row-1][col-1][0] = -1;
 	}
 	else
 	{
@@ -100,25 +115,25 @@ function addchess(col,row){
 		console.log("set white next");
 		$(".nextinfoboard>span").css("background-color","white");
 	}
-	
-	
+		
 	if(checkwin(checkerboard,row-1,col-1))
 	{
 		var strh = color+'  WIN!!!';
+		dialog.setContent(strh);
+		dialog.show();
 		strh = '<h1>'+strh+'</h1>';
 		strh += '<button id="AgainBtn">Again</button>'
-		var allhtml = $('body').html();
-		allhtml = strh + allhtml;
-		$('body').html(allhtml);
+// 		var allhtml = $('body').html();
+// 		allhtml = strh + allhtml;
+// 		$('body').html(allhtml);
 		$('#AgainBtn').click(function(){
 			location.reload();
 		});
-	}
+	}	
 }
 
 function checkwin(checkerboard,i,j){
-    console.log("begin check win");
-    py_checkwin();
+	console.log("begin check win");
 	if(checkColWin(checkerboard,i,j)      || checkRowWin(checkerboard,i,j) || 
 	   checkLeftSkewWin(checkerboard,i,j) || checkRightSkewWin(checkerboard,i,j) )
 	{
@@ -281,47 +296,3 @@ $(function(){
 		},500);
 	});	
 })
-
-function py_checkwin(){
-	console.log("in pycheckwin");
-	var strcheckerboard = "";
-	for(var i=0;i<15;i++){
-		for(var j=0;j<15;j++){
-			strcheckerboard += checkerboard[i][j][0];
-			strcheckerboard += ",";
-			strcheckerboard += checkerboard[i][j][1];
-			if(i == 14 && j==14 )
-				continue;
-			else
-				strcheckerboard += ",";
-		}
-	}
-	console.log(checkerboard);
-	console.log(strcheckerboard);
-
-    var post_data = {
-        "name": "testname",
-        "checkerboard":checkerboard[0][0][0]
-    };
-
-    $.ajax({
-        url: "/gobang/pycheckwin/",
-        //url:"/gobang/testajax/",
-        type: "POST",
-        dataType:"json",//text
-        data: post_data,
-        success: function (data) {
-            console.log(data);
-            $("h1").html(JSON.stringify(data));
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) 
-        {
-            alert(XMLHttpRequest.status);
-            alert(XMLHttpRequest.readyState);
-            alert(textStatus);
-        },
-        fail: function (err, status) {
-            console.log(err)
-        },
-    });
-}
