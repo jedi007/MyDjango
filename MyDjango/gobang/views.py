@@ -7,6 +7,9 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 
 
+from .fLogger import logger
+
+
 def index(request):
     return render(request,'gobang/index.html')
 
@@ -14,11 +17,11 @@ def index(request):
 @csrf_exempt
 def py_step(request):
     if request.method == "POST":
-        #logger.info("test post")
+        logger.info("test post")
         name = request.POST.get('name')
         checkerboard = request.POST.get('checkerboard')
-        #logger.info(type(checkerboard))
-        #logger.info("check:"+str(checkerboard))
+        logger.info(type(checkerboard))
+        logger.info("checkerboard:"+str(checkerboard))
         return HttpResponse(json.dumps({
             "name": "returnname-"+name,
             "status": "1",
