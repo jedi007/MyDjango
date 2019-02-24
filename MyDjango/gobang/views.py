@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .fLogger import logger
 
+from .myModels.computerplayer import computerplayter
+
 
 def index(request):
     return render(request,'gobang/index.html')
@@ -17,16 +19,15 @@ def index(request):
 @csrf_exempt
 def py_step(request):
     if request.method == "POST":
-        logger.info("test post")
+        logger.info("get post method")
         name = request.POST.get('name')
+        steps = request.POST.get('steps')
         checkerboard = request.POST.get('checkerboard')
-        logger.info(type(checkerboard))
-        logger.info("checkerboard:"+str(checkerboard))
-        return HttpResponse(json.dumps({
-            "name": "returnname-"+name,
-            "status": "1",
-            "result": "ok"
-        }))
+
+        beststep = computerplayter.computestep(steps,checkerboard) 
+        logger.info("beststep:"+json.dumps(beststep))
+
+        return HttpResponse(json.dumps(beststep))
     else:
         return HttpResponse(json.dumps({
             "name": "returnname-",
