@@ -1,6 +1,9 @@
 var computerplayer = function(){
 	this.computerstep = function (steps,cboard)
 	{
+		py_step(steps,cboard);
+		
+		
 		var color = ( steps%2 == 0?1:-1 );
 		
 		var beststep      = {i:-1,j:-1,score:-1};
@@ -46,6 +49,46 @@ var computerplayer = function(){
 		else
 			return beststep;
 		
+	}
+
+	function py_step(steps,cboard){
+		console.log("in py_step");
+		var strcheckerboard = "";
+		for(var i=0;i<15;i++){
+			for(var j=0;j<15;j++){
+				strcheckerboard += checkerboard[i][j][0];
+				if(i == 14 && j==14 )
+					continue;
+				else
+					strcheckerboard += ",";
+			}
+		}
+		console.log(checkerboard);
+		console.log(strcheckerboard);
+	
+		var post_data = {
+			"name": "testname",
+			"checkerboard":strcheckerboard
+		};
+	
+		$.ajax({
+			url: "/gobang/py_step/",
+			type: "POST",
+			dataType:"json",//text
+			data: post_data,
+			success: function (data) {
+				console.log(data);
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) 
+			{
+				alert(XMLHttpRequest.status);
+				alert(XMLHttpRequest.readyState);
+				alert(textStatus);
+			},
+			fail: function (err, status) {
+				console.log(err)
+			},
+		});
 	}
 	
 	function getscore(cboard,i,j,color){
