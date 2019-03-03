@@ -63,14 +63,15 @@ $(function(){
 				var row = Math.round(ey/40);
 				if(0 < col && col < 16 && 0 < row && row < 16 && checkerboard[row-1][col-1][0] != 1)
 				{
-					addchess(col,row);
-					
-					if(steps%2 == 0)
+					if(!addchess(col,row))
 					{
-						console.log("------------computerplayer step:");
-						var beststep = complayer.computerstep(steps,checkerboard);
-						console.log(beststep);
-						addchess(beststep.j + 1,beststep.i + 1);
+						if(steps%2 == 0)
+						{
+							console.log("------------computerplayer step:");
+							var beststep = complayer.computerstep(steps,checkerboard);
+							console.log(beststep);
+							addchess(beststep.j + 1,beststep.i + 1);
+						}
 					}
 				}
 				else
@@ -129,7 +130,9 @@ function addchess(col,row){
 		$('#AgainBtn').click(function(){
 			location.reload();
 		});
+		return true;
 	}	
+	return false;
 }
 
 function checkwin(checkerboard,i,j){
